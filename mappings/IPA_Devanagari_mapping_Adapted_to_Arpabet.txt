@@ -1,0 +1,120 @@
+Symbol	Characters	Phonemes	Example	Status	Notes
+‹ अ ›	905	/ə/	अकमक्क ‘confused’	expected	Possibly the vowel is closer to [ʌ].
+‹ अ ›	905	/a/	अगाडि ‘before’	expected	
+‹ अ ›	905	/ʌ/	अकमक्क ‘confused’	expected	
+‹ आ ›	906	/a/	आज ‘today’	expected	
+‹ आ ›	906	/ɑ/	आज ‘today’	expected	
+‹ आ ›	906	/æ/	at	expected	
+‹ आइ ›	0906 | 0907	/ai/	भाइ ‘younger brother’	expected	/ai/ can be represented by ‹आई›, ‹आी›, ‹ˌाˌी›, or ‹ˌाई›.
+‹ आइ ›	0906 | 0907	/aɪ/	भाइ ‘younger brother’	expected	/aɪ/ can be represented by ‹आई›, ‹आी›, ‹ˌाˌी›, or ‹ˌाई›.
+‹ आउ ›	0906 | 0909	/au/	आउनु ‘to come	expected	/au/ can be represented by ‹आउ›, ‹आु›, ‹ˌाˌु›, or ‹ˌाउ›.
+‹ आउ ›	0906 | 0909	/aʊ/	आउनु ‘to come	expected	/aʊ/ can be represented by ‹आउ›, ‹आु›, ‹ˌाˌु›, or ‹ˌाउ›.
+‹ इ ›	907	/ɪ/	इनार ‘well’	expected	
+‹ इँ ›	0907 | 0901	/ĩ/	भुइँ ‘ground’	expected	
+‹ ई ›	908	/i/	गाई ‘cow’	expected	
+‹ ईं ›	0908 | 0902	/ĩ/	तपाईं ‘you’	expected	
+‹ ईउ ›	0908 | 0909	/iu/	जीउ ‘body’	expected	/iu/ can be represented by ‹ईउ›, ‹ईˌु›, ‹ˌीˌु›, or ‹ीउ›.
+‹ उ ›	909	/u/	उड्नु ‘to fly’	expected	
+‹ उँ ›	0909 | 0901	/ũ/	गाउँले ‘rural’	expected	
+‹ उई ›	0909 | 0908	/ui/	दुई ‘two’	expected	/ui/ can be represented by ‹उई›, ‹उी›, ‹ˌुˌी›, or ‹ˌुई›.
+#‹ ऊ ›	090A	/u/	ऊन ‘wool’	expected	
+‹ ऊँ ›	0901 | 090A	/ũ/	ऊँट ‘camel’	uncommon	
+‹ ए ›	090F	/e/	एक ‘one’	expected	
+‹ ए ›	090F	/ɛ/	एक ‘one’	expected	
+‹ ए ›	090F	/eɪ/	एक ‘one’	expected	
+‹ ए ›	090F	/ei/		expected	‹ एँ ›	0901 | 090F	/ẽ/	खाएँ ‘ate’	expected	
+‹ एउ ›	0909 | 090F	/eu/	एउटा ‘one (thing)’	expected	/eu/ can be represented by ‹एउ›, ‹एु›, ‹ˌेˌु›, or ‹ˌेउ›.
+‹ ऐ ›	910	/ʌi/	ऐना ‘mirror’	expected	
+‹ ओ ›	913	/o/	ओरालो ‘downhill slope’	expected	
+‹ ओ ›	913	/ɔ/	ओरालो ‘downhill slope’	expected	
+‹ ओइ ›	0913 | 0907	/oi/	होइन ‘no’	expected	/oi/ can be represented by ‹ओई›, ‹ओी›, ‹ˌोˌी›, or ‹ˌोई›.
+‹ ओइ ›	0913 | 0907	/ɔɪ/	होइन ‘no’	expected	/oi/ can be represented by ‹ओई›, ‹ओी›, ‹ˌोˌी›, or ‹ˌोई›.
+‹ ओऊ ›	0913 | 090A	/ou/	धोऊ ‘wash’	expected	/ou/ can be represented by ‹ओऊ›, ‹ओˌू›, ‹ˌोˌू›, or ‹ˌोऊ›.
+‹ ओऊ ›	0913 | 090A	/oʊ/	धोऊ ‘wash’	expected	/ou/ can be represented by ‹ओऊ›, ‹ओˌू›, ‹ˌोˌू›, or ‹ˌोऊ›.
+‹ औ ›	914	/ʌu/	औधी ‘exceedingly’	expected	
+‹ क ›	915	/k/	केटी ‘girl’	expected	
+‹ ख ›	916	/kʰ/	खेल्नु ‘to play’	expected	
+‹ ग ›	917	/g/	गरम ‘warm’	expected	
+‹ ग ›	917	/ɡ/	गरम ‘warm’	expected	
+‹ घ ›	918	/gʰ/	घाट ‘riverbank’	expected	
+‹ ङ ›	919	/ŋ/	नङ ‘nail’	expected	Word-final and onomatopoeic only
+‹ च ›	091A	/ts/	चामल ‘uncooked rice’	expected	
+‹ च ›	091A	/tʃ/	चामल ‘uncooked rice’	expected	
+‹ छ ›	091B	/tsʰ/	छत्तीस ‘thirty-six’	expected	
+‹ ज ›	091C	/dʒ/	जनै ‘sacred thread’	expected	
+‹ ज ›	091C	/z/	zoo	expected	
+‹ ज ›	091C	/ʒ/	pleasure	expected	
+‹ झ ›	091D	/dʒʱ/	झट्ट ‘immediately’	expected	The Nepali form of this character - झ - is different than what is used in India (झ).
+‹ ञ ›	091E	/n/	सञ्चार ‘transmission’	expected	Always as part of a cluster
+‹ ञ ›	091E	/ɲ/	सञ्चार ‘transmission’	expected	Only occurs in clusters with च and छ, so is subject to palatalization
+‹ ट ›	091F	/ʈ/	टोपी ‘hat’	expected	
+‹ ट ›	091F	/t/	टोपी ‘hat’	expected	
+‹ ठ ›	920	/ʈʰ/	ठूलो ‘big’	expected	
+‹ ड ›	921	/ɖ/	डर ‘fear’	expected	
+‹ ड ›	921	/d/	डर ‘fear’	expected	
+‹ ढ ›	922	/ɖʰ/	ढाल्नु ‘to knock over’	expected	
+‹ ण ›	923	/n/	पूणिर्मा ‘night of a full moon’	expected	
+‹ ण ›	923	/ɳ/	बाणं ‘arrow’	common	Sanskrit loanwords?
+‹ ण ›	923	/ɽ/	बाणं ‘arrow’	rare	Sanskrit loanwords
+‹ त ›	924	/t̪/	तयार ‘ready’	expected	
+‹ थ ›	925	/t̪ʰ/	थाल ‘plate’	expected	
+‹ थ ›	925	/θ/	थाल ‘plate’	expected	
+‹ द ›	926	/d̪/	दाँत ‘tooth’	expected	
+‹ द ›	926	/ð/	दाँत ‘tooth’	expected	
+‹ ध ›	927	/d̪ʰ/	धन्यवाद ‘thank you’	expected	
+‹ न ›	928	/n/	नेपाल ‘nepal’	expected	
+‹ प ›	092A	/p/	पाँच ‘five’	expected	
+‹ फ ›	092B	/f/	फूल ‘flower’	expected	
+‹ फ ›	092B	/pʰ/	फूल ‘flower’	expected	
+‹ ब ›	092C	/b/	बाघ ‘tiger’	expected	
+‹ भ ›	092D	/bʰ/	सम्भब ‘possible’	expected	
+‹ म ›	092E	/m/	मीठो ‘tasty’	expected	
+‹ य ›	092F	/j/	यहाँ ‘here’	expected	
+‹ र ›	930	/ɾ/	राम्रो ‘good’	expected	Pronunciation variant
+‹ र ›	930	/r/	राम्रो ‘good’	expected	Pronunciation variant
+‹ र ›	930	/ɹ/	राम्रो ‘good’	expected	Pronunciation variant
+‹ र् ›	930,94D	/ɝ/	for ’	expected	Pronunciation variant
+‹ अर् ›	905,930,94D	/ɝ/	for ’	expected	Pronunciation variant
+‹ ल ›	932	/l/	लेख्नु ‘to write’	expected	
+‹ व ›	935	/w/	वकिल ‘advocate	expected	
+‹ व्ह ›	935,94D,939	/v/	valid	expected	
+‹ श ›	936	/ʃ/	बिदेशी ‘foreigner’	uncommon	
+#‹ ष ›	937	/ʃ/	परिषद ‘council’	uncommon	Sanskrit loanwords
+‹ स ›	938	/s/	सेतो ‘white’	expected	
+‹ ह ›	939	/ɦ/	हात ‘hand’	expected	
+‹ ह ›	939	/h/	हात ‘hand’	expected	
+‹ ा ›	093E	/a/	नेपाल ‘nepal’	expected	
+‹ ा ›	093E	/ɑ/	नेपाल ‘nepal’	expected
+‹ ा ›	093E	/æ/	'hand'	expected
+‹ ाइ ›		/ai/	भाइ ‘younger brother’	expected	/ai/ can be represented by ‹आई›, ‹आी›, ‹ˌाˌी›, or ‹ˌाई›.
+‹ ाइ ›		/aɪ/	भाइ ‘younger brother’	expected	/aɪ/ can be represented by ‹आई›, ‹आी›, ‹ˌाˌी›, or ‹ˌाई›.
+‹ ाउ ›		/au/	आउनु ‘to come	expected	/au/ can be represented by ‹आउ›, ‹आु›, ‹ˌाˌु›, or ‹ˌाउ›.
+‹ ाउ ›		/aʊ/	आउनु ‘to come	expected	/aʊ/ can be represented by ‹आउ›, ‹आु›, ‹ˌाˌु›, or ‹ˌाउ›.
+‹ ाँ ›	093E | 0901	/ã/	यहाँ ‘here’	expected	
+‹ ि ›	093F	/I/	पिरो ‘spicy’	expected	
+‹ ि ›	093F	/ɪ/	पिरो ‘spicy’	expected	
+‹ िं ›	093F | 0902	/ĩ/	साहिंला ‘third son’	expected	
+‹ ी ›	940	/i/	तीस ‘thirty’	expected	
+‹ ीं ›	0940 | 0902	/ĩ/	यहीं ‘right here’	expected	
+‹ ु ›	941	/u/	मुटु ‘heart’	expected	
+‹ ु ›	941	/ʊ/	मुटु ‘heart’	expected	
+‹ ुँ ›	0941 | 0901	/ũ/	हुँ ‘am’	expected	
+#‹ ू ›	942	/u/	पूजा ‘worship’	expected	
+#‹ ू ›	942	/ʊ/	पूजा ‘worship’	expected	
+‹ े ›	947	/e/	मेरो ‘my’	expected	
+‹ े ›	947	/ɛ/	मेरो ‘my’	expected	
+‹ े ›	947	/eɪ/	मेरो ‘my’	expected	
+‹ ेँ ›	0947 | 0901	/ẽ/	गरेँ ‘did’	expected	
+‹ ◌ै ›	948	/ʌi/	कैले ‘when’	expected	
+‹ ◌ै ›	948	/ei/	कुनै ‘some’	expected	
+‹ ो ›	094B	/o/	राम्रो ‘good’	expected	
+‹ ो ›	094B	/ɔ/	राम्रो ‘good’	expected	
+‹ ोइ ›	094B | 0907	/oi/	होइन ‘no’	expected	/oi/ can be represented by ‹ओई›, ‹ओी›, ‹ˌोˌी›, or ‹ˌोई›.
+‹ ोइ ›	094B | 0907	/ɔɪ/	होइन ‘no’	expected	/oi/ can be represented by ‹ओई›, ‹ओी›, ‹ˌोˌी›, or ‹ˌोई›.
+‹ ोऊ ›	0913 | 090A	/ou/	धोऊ ‘wash’	expected	/ou/ can be represented by ‹ओऊ›, ‹ओˌू›, ‹ˌोˌू›, or ‹ˌोऊ›.
+‹ ोऊ ›	0913 | 090A	/oʊ/	धोऊ ‘wash’	expected	/ou/ can be represented by ‹ओऊ›, ‹ओˌू›, ‹ˌोˌू›, or ‹ˌोऊ›.
+‹ ◌ौ ›	094C	/ʌu/	पौने ‘three-quarters’	expected	
+‹ ◌् ›	094D	/∅/	पढ्नु ‘to read’	expected	The virama has the effect of removing the inherent vowel.
+‹ ◌्या ›	094D	/æ/	bat	expected	
+‹ ॲ ›	972	/ã/	अँजुली ‘cupped hands in worship’	expected	
+‹ ॲ ›	972	/ə̃/		rare	Informal (unwritten)
