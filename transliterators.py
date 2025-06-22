@@ -1,10 +1,13 @@
+from nltk.downloader import Downloader
 import pandas as pd
 from string import digits
 import traceback
 from typing import Any, Optional
-import nltk
 from g2p_en import G2p
 from transliterator import Transliterator
+from devanagari.utils import is_devanagari_token
+from pathlib import Path
+from datetime import datetime
 
 
 class RomanToDevaTransliterator(Transliterator):
@@ -25,6 +28,9 @@ class RomanToDevaTransliterator(Transliterator):
     self._ipa_arpa_path = ipa_arpa_path if ipa_arpa_path else RomanToDevaTransliterator._IPA_ARPA_MAP_PATH
     self._ipa_deva_path = ipa_deva_path if ipa_deva_path else RomanToDevaTransliterator._IPA_DEVA_MAP_PATH
     self._initialize_mappings()
+
+  def for_transliteration(self, word):
+    return not is_devanagari_token(word)
 
   #DEVANAGARI
   @staticmethod
@@ -117,6 +123,28 @@ class RomanToDevaTransliterator(Transliterator):
     if current == 0:
       return False
     return RomanToDevaTransliterator.soundEndsWithVowel(arpabet_notation, current-1)
+  
+  def days_since_modification(self, nltk_resource_path: Path):
+      modified_datetime = datetime.fromtimestamp(nltk_resource_path.stat().st_mtime)
+      current_datetime = datetime.now()
+      time_difference = current_datetime - modified_datetime
+      return time_difference.days
+
+  def _update_nltk_resources_using_status(self, resource_names: list[str]) -> None:
+      dldr = Downloader()
+      for resource_name in resource_names:
+          if dldr.status(info_or_id=resource_name) == Downloader.INSTALLED:
+              continue
+          dldr.download(resource_name)
+  
+  def _update_nltk_resources(self, resource_names: list[str]) -> None:
+      dldr = Downloader()
+      nltk_resource_dir = Path(dldr.download_dir)
+      for resource_name in resource_names:
+          if self.days_since_modification(next(nltk_resource_dir.rglob(resource_name))) < 30:
+              continue
+          dldr.download(resource_name)
+
 
   def _load_ipa_arpa_map(self) -> None:
     #IPA_ARPA, Phoneme Unicode List
@@ -146,8 +174,7 @@ class RomanToDevaTransliterator(Transliterator):
       assert phoneme in ipa_dev_phoneme, f'{phoneme} not in IPA-Devanagari mapping. Please review the mapping file: {self._ipa_deva_path}'
 
   def _initialize_mappings(self):
-    nltk.download('averaged_perceptron_tagger_eng')
-    nltk.download('cmudict')
+    self._update_nltk_resources(['cmudict', 'averaged_perceptron_tagger_eng'])
     self._load_ipa_arpa_map()
     self._load_ipa_deva_map()
     self._assert_complete_mapping()
@@ -254,7 +281,6 @@ class RomanToDevaTransliterator(Transliterator):
     """
     To do: include typehints
     """
-    print(word)
     g2p = G2p()
     return self._get_devanagari(g2p(word))
   
