@@ -1,12 +1,13 @@
 import sys
 print(sys.path)
-from transliterator import TranslitDict
-from transliterators import RomanToDevaTransliterator
+from transliteration.transliterator import TranslitDict
+from transliteration.transliterators import RomanToDevaTransliterator
 from json import JSONDecodeError
 
+PROJECT_DIR = './transliteration/'
 def create_and_export():
-    translit_dict = TranslitDict.create(transcr_src='./test/data/words_2_transliterate.txt', translitrtr=RomanToDevaTransliterator())
-    translit_dict.export(dest_path='./test/data/created_translit_dict.json')
+    translit_dict = TranslitDict.create(transcr_src=f'{PROJECT_DIR}/test/data/words_2_transliterate.txt', translitrtr=RomanToDevaTransliterator())
+    translit_dict.export(dest_path=f'{PROJECT_DIR}/test/data/created_translit_dict.json')
 
 def load_from_json(src_path:str) -> None:
     translit_dict = TranslitDict.load(src_path = src_path)
@@ -29,10 +30,10 @@ def load_from_csv(src_path: str, delimiter: str, headers: tuple[str, str]) -> No
     print_translit_dict(translit_dict, 5)
 
 def load_from_empty_json():
-    load_from_json(src_path='./test/data/empty_translit_dict.json')
+    load_from_json(src_path=f'{PROJECT_DIR}/test/data/empty_translit_dict.json')
 
 def load_from_empty_csv():
-    load_from_csv(src_path='./test/data/empty_translit_dict.csv', delimiter=',', headers=('Word', 'Transliteration'))
+    load_from_csv(src_path=f'{PROJECT_DIR}/test/data/empty_translit_dict.csv', delimiter=',', headers=('Word', 'Transliteration'))
 
 def print_title(title: str):
     marker = "".join(['-' for i in range(len(title))])
@@ -41,9 +42,9 @@ def print_title(title: str):
 def main():
 
     print_title("TESTING NON-EMPTY JSON LOAD")
-    load_from_json(src_path='./test/data/translit_dict.json')
+    load_from_json(src_path=f'{PROJECT_DIR}/test/data/translit_dict.json')
     print_title(f"TESTING NON-EMPTY SV FILE LOAD")
-    load_from_csv(src_path='./test/data/translit_dict.csv', delimiter=',', headers=('Word', 'Transliteration'))
+    load_from_csv(src_path=f'{PROJECT_DIR}/test/data/translit_dict.csv', delimiter=',', headers=('Word', 'Transliteration'))
 
     try:
         print_title(f"TESTING EMPTY JSON LOAD")

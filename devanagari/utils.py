@@ -1,4 +1,4 @@
-import utils as translitutils
+import transliteration.utils as translitutils
 def is_devanagari(unicode_point: int) -> bool:
     return True if (unicode_point >= 2304 and unicode_point <= 2431) else False
 

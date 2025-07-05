@@ -4,8 +4,8 @@ from string import digits
 import traceback
 from typing import Any, Optional
 from g2p_en import G2p
-from transliterator import Transliterator
-from devanagari.utils import is_devanagari_token
+from transliteration.transliterator import Transliterator
+from transliteration.devanagari.utils import is_devanagari_token
 from pathlib import Path
 from datetime import datetime
 
