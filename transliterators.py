@@ -142,7 +142,8 @@ class RomanToDevaTransliterator(Transliterator):
       dldr = Downloader()
       nltk_resource_dir = Path(dldr.download_dir)
       for resource_name in resource_names:
-          if self.days_since_modification(next(nltk_resource_dir.rglob(resource_name))) < 30:
+          resource = next(nltk_resource_dir.rglob(resource_name), None)
+          if resource and self.days_since_modification(resource) < 30:
               continue
           dldr.download(resource_name)
 
