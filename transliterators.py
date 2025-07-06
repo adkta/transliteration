@@ -8,6 +8,7 @@ from transliteration.transliterator import Transliterator
 from transliteration.devanagari.utils import is_devanagari_token
 from pathlib import Path
 from datetime import datetime
+from importlib.resources import files
 
 
 class RomanToDevaTransliterator(Transliterator):
@@ -20,8 +21,8 @@ class RomanToDevaTransliterator(Transliterator):
   and additional rule
   """
 
-  _IPA_ARPA_MAP_PATH: str = "./mappings/IPA_ARPABET_mapping.txt"
-  _IPA_DEVA_MAP_PATH: str = "./mappings/IPA_Devanagari_mapping_Adapted_to_Arpabet.txt"
+  _IPA_ARPA_MAP_PATH: str = files("transliteration.mappings").joinpath("IPA_ARPABET_mapping.txt").as_posix()
+  _IPA_DEVA_MAP_PATH: str = files("transliteration.mappings").joinpath("IPA_Devanagari_mapping_Adapted_to_Arpabet.txt").as_posix()
 
   def __init__(self, *, ipa_arpa_path: Optional[str] = None, ipa_deva_path: Optional[str] = None ,**kwargs: Any) -> None:
     super().__init__(**kwargs)

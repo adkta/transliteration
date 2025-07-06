@@ -3,11 +3,12 @@ print(sys.path)
 from transliteration.transliterator import TranslitDict
 from transliteration.transliterators import RomanToDevaTransliterator
 from json import JSONDecodeError
+from importlib.resources import files
 
-PROJECT_DIR = './transliteration/'
-def create_and_export():
+PROJECT_DIR = files("transliteration").joinpath("").as_posix()
+def create_and_export() -> None:
     translit_dict = TranslitDict.create(transcr_src=f'{PROJECT_DIR}/test/data/words_2_transliterate.txt', translitrtr=RomanToDevaTransliterator())
-    translit_dict.export(dest_path=f'{PROJECT_DIR}/test/data/created_translit_dict.json')
+    translit_dict.export(dest_path=f'{PROJECT_DIR}/test/data/translit_dict.json')
 
 def load_from_json(src_path:str) -> None:
     translit_dict = TranslitDict.load(src_path = src_path)
@@ -40,9 +41,10 @@ def print_title(title: str):
     print(f"\n\n{marker}\n{title}\n{marker}")
 
 def main():
-
+    print_title("CREATING AND EXPORTING TRANSLITERATION DICTIONARY")
+    create_and_export()
     print_title("TESTING NON-EMPTY JSON LOAD")
-    load_from_json(src_path=f'{PROJECT_DIR}/test/data/translit_dict.json')
+    load_from_json(src_path=f'{PROJECT_DIR}/test/data/created_translit_dict.json')
     print_title(f"TESTING NON-EMPTY SV FILE LOAD")
     load_from_csv(src_path=f'{PROJECT_DIR}/test/data/translit_dict.csv', delimiter=',', headers=('Word', 'Transliteration'))
 
