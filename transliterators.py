@@ -31,8 +31,11 @@ class RomanToDevaTransliterator(Transliterator):
     self._ipa_deva_path = ipa_deva_path if ipa_deva_path else RomanToDevaTransliterator._IPA_DEVA_MAP_PATH
     self._initialize_mappings()
 
-  def for_transliteration(self, word):
-    return not is_devanagari_token(word)
+  def for_transliteration(self, word) -> bool:
+      logger.debug(f"Inside {self.__class__.__name__}. Checking if {word} is eligible for transliteration")
+      if is_devanagari_token(word):
+          return False
+      return super().for_transliteration(word)
 
   #DEVANAGARI
   @staticmethod

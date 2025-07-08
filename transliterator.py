@@ -1,7 +1,9 @@
 from typing import Union, Optional
 from pathlib import Path
 import json
-from ..transliteration import logger
+import re
+from transliteration import logger
+from transliteration.utils import get_matching_files
 
 
 
@@ -63,20 +65,47 @@ class TranslitDict(dict[str, str]):
 
 
     @staticmethod
-    def create(transcr_src: str, translitrtr: "Transliterator", encoding:str = _FILE_ENCODING) -> "TranslitDict":
+    def create(transcr_src: str, translitr: "Transliterator", encoding:str = _FILE_ENCODING, transcr_name_pattern: str = r"transcript.txt$") -> "TranslitDict":
         """
         Create a transliteration dictionary for given words
-        :param transcr_src: str path to the file containing list of words to be transliterated (supports one word per line)
+        :param transcr_src: str path to the file or folder containing list of words or a corpus. If a folder is provided, one can specify transcr_name_pattern argument. Chooses words using Transliterator.for_transliteration. 
         :param translitrtr: Transliterator Transliterator object with a technique to transliterate
         :param encoding: str File encoding standard used
+        :param transcr_name_pattern: str File name pattern (use regex format) to allow choosing file if transcr_src is a directory and not a file
         :return: TranslitDict returns a TranslitDict object
         """
+        
+        transcr_src_path = Path(transcr_src)
+        punct_space = r"[\s\.\?\|!\",]+"
+        tknzr_pattern = re.compile(punct_space)
+        if not transcr_src_path.exists():
+            raise FileNotFoundError(f"Path {transcr_src_path.absolute()} does not exist!")
+        if transcr_src_path.is_file():
+            return TranslitDict._create_from_file(transcr_src, translitr, tknzr_pattern, encoding)
+        if transcr_src_path.is_dir():
+            transcr_paths = get_matching_files(data_fol = transcr_src_path, file_pattern = transcr_name_pattern)
+            translit_dict = TranslitDict()
+            for transcr_path in transcr_paths:
+                translit_dict.update(TranslitDict._create_from_file(transcr_path, translitr, tknzr_pattern, encoding))
+            return translit_dict
+
+        
+    @staticmethod
+    def _create_from_file(transcr_src: str, translitr: "Transliterator", tknzr_pattern: re.Pattern, encoding:str = _FILE_ENCODING) -> "TranslitDict":
+        logger.info(f"Extracting dictionary from file: {transcr_src}...")
         translit_dict = TranslitDict()
-        with open(transcr_src, encoding=encoding) as words_to_translit:
-            for word in words_to_translit:
-                word = word.strip()
-                if translitrtr.for_transliteration(word):
-                    translit_dict[word] = translitrtr.translit(word)
+        with open(transcr_src, encoding = encoding) as lines:
+            for line in lines:
+                line.strip()
+                if not line:
+                    continue
+                tokens = tknzr_pattern.split(line)
+                logger.debug(f"Split into: {tokens}")
+                for token in tokens:
+                    logger.debug(f"Attempting transliteration of {token}...")
+                    if translitr.for_transliteration(word=token):
+                        translit_dict[token] = translitr.translit(token)
+                    logger.debug(f"Transliterated {token} and saved to dictionary")
         return translit_dict
 
     def export(self, dest_path: str, delimiter:str = ',', exp_mode:str = 'w', encoding:str = _FILE_ENCODING) -> None:
@@ -91,6 +120,9 @@ class TranslitDict(dict[str, str]):
 
         if exp_mode not in ['w', 'a']:
             raise ValueError("Allowed export/write modes are w for write and a for append. But {exp_mode=} was passed")
+        
+        if not translit_dest_path.parent.exists():
+            translit_dest_path.parent.mkdir(parents=True)
         
         if translit_dest_path.suffix == '.json':
             self.export_to_json(dest_path, exp_mode, encoding)
@@ -154,7 +186,7 @@ class Transliterator():
         :param word: str Word to be transliterated
         :return: str Transliteration of the supplied word
         """
-        return True
+        return True if word else False
 
     def translit(self, word: str) -> Optional[str]:
         """
