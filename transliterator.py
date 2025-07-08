@@ -1,6 +1,9 @@
 from typing import Union, Optional
 from pathlib import Path
 import json
+from ..transliteration import logger
+
+
 
 class TranslitDict(dict[str, str]):
     _FILE_ENCODING = 'utf-8'
@@ -72,7 +75,8 @@ class TranslitDict(dict[str, str]):
         with open(transcr_src, encoding=encoding) as words_to_translit:
             for word in words_to_translit:
                 word = word.strip()
-                translit_dict[word] = translitrtr.translit(word)
+                if translitrtr.for_transliteration(word):
+                    translit_dict[word] = translitrtr.translit(word)
         return translit_dict
 
     def export(self, dest_path: str, delimiter:str = ',', exp_mode:str = 'w', encoding:str = _FILE_ENCODING) -> None:
@@ -136,7 +140,7 @@ class Transliterator():
         When a filepath is provided, column headers corresponding to word and its
         transliteration should also be provided.
         """
-        print("Inside Transliterator init")
+        logger.debug("Inside Transliterator init")
         if not translit_dict:
             self.translit_dict = None
         elif (isinstance(translit_dict, str)):
@@ -152,7 +156,7 @@ class Transliterator():
         """
         return True
 
-    def translit(self, word: str) -> str:
+    def translit(self, word: str) -> Optional[str]:
         """
         Transliterate a word. 
         Performs the following in order: 
@@ -163,17 +167,15 @@ class Transliterator():
         :return: str Transliteration of supplied word
         """
         word = word.strip()
-        print(f"Transliterating {word}...")
-        if not self.for_transliteration(word):
-            return word
+        logger.debug(f"Transliterating {word}...")
         out = self.translit_using_dict(word)
         if not out:
             out = self.translit_using_rules(word)
         if not out:
-            out = f"Transliteration failed for {word=}"
+            logger.info(f"Transliteration failed for {word=}. The word to transliterate wasn't sent in the source script or it isn't present in cmudict.")
         return out
 
-    def translit_using_rules(self, word: str) -> str:
+    def translit_using_rules(self, word: str) -> Optional[str]:
         """
         Transliterate a word using rules
         This needs to be implemented in the child class.
@@ -182,7 +184,7 @@ class Transliterator():
         """
         return None
 
-    def translit_using_dict(self, word: str) -> str:
+    def translit_using_dict(self, word: str) -> Optional[str]:
         """
         Transliterate a word using dictionary lookup. 
         If one wants to use a dictionary, dictionary filepath or TranslitDict instance must be supplied during instantiation

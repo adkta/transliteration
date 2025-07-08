@@ -9,6 +9,7 @@ from transliteration.devanagari.utils import is_devanagari_token
 from pathlib import Path
 from datetime import datetime
 from importlib.resources import files
+from transliteration import logger
 
 
 class RomanToDevaTransliterator(Transliterator):
@@ -192,11 +193,11 @@ class RomanToDevaTransliterator(Transliterator):
     for deva_symbol in candidate_devanagari_list:
 
       deva_symbol = deva_symbol.strip('‹› ').strip()
-      # print(f"After stripping: {deva_symbol}")
+      logger.debug(f"After stripping: {deva_symbol}")
 
       if RomanToDevaTransliterator.isERSound(arpabet_notation, current_arpabet_position):
 
-        # print("Inside ER Sound")
+        logger.debug("Inside ER Sound")
 
         prev_consonant = RomanToDevaTransliterator.isPreviousSoundConsonant(arpabet_notation, current_arpabet_position)
         prev_vowel = RomanToDevaTransliterator.isPreviousSoundVowel(arpabet_notation, current_arpabet_position)
@@ -211,7 +212,7 @@ class RomanToDevaTransliterator(Transliterator):
 
       elif RomanToDevaTransliterator.isSoundFullyVowel(arpabet_notation, current_arpabet_position): #sound starts with a vowel (doesn't need to be fully vowel). The first condition
 
-        # print("Inside Fully Vowel")
+        logger.debug("Inside Fully Vowel")
         if not RomanToDevaTransliterator.isSvara(deva_symbol[0]) and not RomanToDevaTransliterator.isMatra(deva_symbol[0]):
           continue
 
@@ -226,7 +227,7 @@ class RomanToDevaTransliterator(Transliterator):
       else:
         #ER arpabet sound needs to be accounted for since it isn't exclusively a vowel or a consonant sound
 
-        # print("Inside Consonant Sound")
+        logger.debug("Inside Consonant Sound")
 
         if not RomanToDevaTransliterator.isVyanjan(deva_symbol[0]):
           continue
@@ -239,13 +240,16 @@ class RomanToDevaTransliterator(Transliterator):
 
       final_deva_list.append(deva_symbol)
 
-    print(final_deva_list)
+    logger.debug(final_deva_list)
     if len(final_deva_list) > 1:
       raise Exception("Cannot determine a unique Devanagari output for phonetic unit!")
     return "" if len(final_deva_list) == 0 else final_deva_list[0]
 
-  def _get_devanagari(self, phonetic_spel:str) -> str:
+  def _get_devanagari(self, phonetic_spel:str) -> Optional[str]:
     arpabet_out_len = len(phonetic_spel)
+
+    if not arpabet_out_len:
+        return None
 
     op_deva_word = []
 
@@ -256,7 +260,7 @@ class RomanToDevaTransliterator(Transliterator):
       phoneme = phoneme.translate(remove_digits)
       arpabet_wo_digits.append(phoneme)
 
-    # print(arpabet_wo_digits)
+    logger.debug(arpabet_wo_digits)
     puncs_spaces = [' ', ',', '.']
     for i in range(arpabet_out_len):
       phoneme = arpabet_wo_digits[i]
@@ -267,19 +271,19 @@ class RomanToDevaTransliterator(Transliterator):
 
       ipa_phoneme = self._ipa_arpa_map_df.loc[self._ipa_arpa_map_df["ARPABET"] == phoneme, 'IPA'].iloc[0] #ipa phoneme from ipa arpabet mapping
       unicodes = [hex(ord(character)) for character in ipa_phoneme] #unicodes needed to distinguish similar looking phoneme alphabets to manually add to ipa devanagari mapping
-      # print(f'Arpabet: {arpabet_wo_digits[i]} \t IPA: /{ipa_phoneme}/ \t Unicode: {unicodes}')
+      logger.debug(f'Arpabet: {arpabet_wo_digits[i]} \t IPA: /{ipa_phoneme}/ \t Unicode: {unicodes}')
       try:
         candidate_devanagari_list = list(self._ipa_deva_map_df.loc[self._ipa_deva_map_df["IPA_Phoneme"]==ipa_phoneme]["Symbol"]) #outputs all possible rows
-        # print(candidate_devanagari_list)
+        logger.debug(candidate_devanagari_list)
         final_deva_symbol = RomanToDevaTransliterator._get_devanagari_selection(candidate_devanagari_list, arpabet_wo_digits, i)
-        # print(final_deva_symbol)
+        logger.debug(final_deva_symbol)
         op_deva_word.append(final_deva_symbol)
       except Exception:
         print(traceback.format_exc())
-      # print(f'/{ipa_phoneme}/')
+        logger.debug(f'/{ipa_phoneme}/')
     return "".join(op_deva_word)
 
-  def translit_using_rules(self, word: str) -> str:
+  def translit_using_rules(self, word: str) -> Optional[str]:
     """
     To do: include typehints
     """
