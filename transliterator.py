@@ -7,10 +7,14 @@ from transliteration.utils import get_matching_files
 
 
 class TranslitDict(dict[str, str]):
+
     _FILE_ENCODING = 'utf-8'
     PUNCT_SPACE_REGEX = r"[\s\.\?\|!\",]+"
+    DEFAULT_HEADERS = ("Word","Transliteration")
+    DEFAULT_DELIMITER = ","
+
     @classmethod
-    def load(cls, src_path: str, delimiter: Optional[str] = None, headers: Optional[tuple[str]] = None, encoding: str = _FILE_ENCODING) -> "TranslitDict":
+    def load(cls, src_path: str, delimiter: str = DEFAULT_DELIMITER, headers: tuple[str] = DEFAULT_HEADERS, encoding: str = _FILE_ENCODING) -> "TranslitDict":
         """
         :param src_path: str transcript file location. Works with json files or delimeter separated files
         :param delimiter: str delimiter used in file (not required if json file source)
@@ -33,14 +37,16 @@ class TranslitDict(dict[str, str]):
             
     @classmethod
     def from_json_file(cls, src_path:str, encoding:str = _FILE_ENCODING) -> "TranslitDict":
+        translit_dict = TranslitDict()
         with open(file = src_path, encoding=encoding) as translit_src_path:
             try:
-                return json.load(fp = translit_src_path)
+                translit_dict.update(json.load(fp = translit_src_path))
+                return translit_dict
             except json.decoder.JSONDecodeError as e:
                 raise json.decoder.JSONDecodeError(f"Could not load transliteration dictionary (TranslitDict object). Reason: BAD JSON FILE: {e.msg}.", doc = e.doc, pos = e.pos)
 
     @classmethod
-    def from_sv_file(cls, src_path: str, delimiter:str, headers: tuple[str, str], encoding:str = _FILE_ENCODING) -> "TranslitDict":
+    def from_sv_file(cls, src_path: str, delimiter:str = DEFAULT_DELIMITER, headers: tuple[str, str] = DEFAULT_HEADERS, encoding:str = _FILE_ENCODING) -> "TranslitDict":
         if not delimiter or not headers:
             raise ValueError("No delimiter or header provided")
         
@@ -48,13 +54,13 @@ class TranslitDict(dict[str, str]):
             raise ValueError("Can only have 2 headers corresponding to word to transliterate and its transliteration")
  
         translit_dict = TranslitDict()
-        word, translitn = headers
+        word_hdr, translitn_hdr = headers
         with open(file = src_path, encoding=encoding) as translit_dict_file:
             hdr_fields:list[str] = translit_dict_file.readline().strip().split(delimiter)
-            if (word not in hdr_fields) or (translitn not in hdr_fields):
+            if (word_hdr not in hdr_fields) or (translitn_hdr not in hdr_fields):
                 raise ValueError(f'Provided headers are not present in file {src_path}. Please supply correct headers or check the file.')
-            word_idx:int = hdr_fields.index(word)
-            translitn_idx:int = hdr_fields.index(translitn)
+            word_idx:int = hdr_fields.index(word_hdr)
+            translitn_idx:int = hdr_fields.index(translitn_hdr)
             for line in translit_dict_file:
                 fields = line.strip().split(delimiter)
                 translit_dict[fields[word_idx]] = fields[translitn_idx]
@@ -109,7 +115,7 @@ class TranslitDict(dict[str, str]):
             logger.debug(f"Transliterated {token} and saved to dictionary")
         return translit_dict
 
-    def export(self, dest_path: str, delimiter:str = ',', exp_mode:str = 'w', encoding:str = _FILE_ENCODING) -> None:
+    def export(self, dest_path: str, delimiter: str = DEFAULT_DELIMITER, headers:tuple[str] = DEFAULT_HEADERS, exp_mode:str = 'w', encoding:str = _FILE_ENCODING) -> None:
         """
         Save TranslitDict instance as json or delimiter separated value file based on the extension of destination path
         :param dest_path: str destination path to save the transliteration dictionary in
@@ -120,7 +126,7 @@ class TranslitDict(dict[str, str]):
         translit_dest_path = Path(dest_path)
 
         if exp_mode not in ['w', 'a']:
-            raise ValueError("Allowed export/write modes are w for write and a for append. But {exp_mode=} was passed")
+            raise ValueError(f"Allowed export/write modes are w for write and a for append. But {exp_mode=} was passed")
         
         if not translit_dest_path.parent.exists():
             translit_dest_path.parent.mkdir(parents=True)
@@ -128,9 +134,9 @@ class TranslitDict(dict[str, str]):
         if translit_dest_path.suffix == '.json':
             self.export_to_json(dest_path, exp_mode, encoding)
         else:
-            self.export_to_sv(dest_path, delimiter, exp_mode, encoding)
+            self.export_to_sv(dest_path, delimiter, headers, exp_mode, encoding)
         
-    def export_to_json(self, dest_path, exp_mode, encoding:str = _FILE_ENCODING) -> None:
+    def export_to_json(self, dest_path:str,  exp_mode:str = 'w', encoding:str = _FILE_ENCODING) -> None:
         """
         Save TranslitDict instance as json file based on the extension of destination path
         :param dest_path: str destination path to save the transliteration dictionary in
@@ -143,7 +149,7 @@ class TranslitDict(dict[str, str]):
         with open(dest_path, mode = 'w', encoding=encoding) as translit_dict_file:
             json.dump(obj=self, fp=translit_dict_file, ensure_ascii=False)
 
-    def export_to_sv(self, dest_path, delimiter, exp_mode, encoding:str = _FILE_ENCODING):
+    def export_to_sv(self, dest_path: str, delimiter: str = DEFAULT_DELIMITER, headers:tuple[str] = DEFAULT_HEADERS, exp_mode:str = 'w', encoding:str = _FILE_ENCODING) -> None:
         """
         Save TranslitDict instance as delimiter separated file based on the extension of destination path
         :param dest_path: str destination path to save the transliteration dictionary in
@@ -152,10 +158,11 @@ class TranslitDict(dict[str, str]):
         :param encoding: str File encoding
         :return: None 
         """
+        word_hdr, translitn_hdr = headers
         if exp_mode == 'a':
             self.update(TranslitDict.from_sv_file(src_path=dest_path, delimiter=delimiter, encoding=encoding))
         with open(dest_path, mode='w', encoding=encoding) as out_translit_dict_file:
-            out_translit_dict_file.write(f"Word{delimiter}Transliteration\n")
+            out_translit_dict_file.write(f"{word_hdr}{delimiter}{translitn_hdr}\n")
             for word, translitn in self.items():
                 out_translit_dict_file.write(f"{word}{delimiter}{translitn}\n")
 
