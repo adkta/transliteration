@@ -139,7 +139,7 @@ class TranslitDict(dict[str, str]):
         :return: None 
         """
         if exp_mode == 'a':
-            self = TranslitDict.from_json_file(src_path=dest_path).update(self)
+            self.update(TranslitDict.from_json_file(src_path=dest_path))
         with open(dest_path, mode = 'w', encoding=encoding) as translit_dict_file:
             json.dump(obj=self, fp=translit_dict_file, ensure_ascii=False)
 
@@ -152,7 +152,9 @@ class TranslitDict(dict[str, str]):
         :param encoding: str File encoding
         :return: None 
         """
-        with open(dest_path, mode=exp_mode, encoding=encoding) as out_translit_dict_file:
+        if exp_mode == 'a':
+            self.update(TranslitDict.from_sv_file(src_path=dest_path, delimiter=delimiter, encoding=encoding))
+        with open(dest_path, mode='w', encoding=encoding) as out_translit_dict_file:
             out_translit_dict_file.write(f"Word{delimiter}Transliteration\n")
             for word, translitn in self.items():
                 out_translit_dict_file.write(f"{word}{delimiter}{translitn}\n")
