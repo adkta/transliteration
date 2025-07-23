@@ -47,20 +47,30 @@ class TranslitDict(dict[str, str]):
 
     @classmethod
     def from_sv_file(cls, src_path: str, delimiter:str = DEFAULT_DELIMITER, headers: tuple[str, str] = DEFAULT_HEADERS, encoding:str = _FILE_ENCODING) -> "TranslitDict":
-        if not delimiter or not headers:
-            raise ValueError("No delimiter or header provided")
-        
         if len(headers) != 2:
             raise ValueError("Can only have 2 headers corresponding to word to transliterate and its transliteration")
  
         translit_dict = TranslitDict()
         word_hdr, translitn_hdr = headers
         with open(file = src_path, encoding=encoding) as translit_dict_file:
-            hdr_fields:list[str] = translit_dict_file.readline().strip().split(delimiter)
-            if (word_hdr not in hdr_fields) or (translitn_hdr not in hdr_fields):
-                raise ValueError(f'Provided headers are not present in file {src_path}. Please supply correct headers or check the file.')
-            word_idx:int = hdr_fields.index(word_hdr)
-            translitn_idx:int = hdr_fields.index(translitn_hdr)
+            first_line_fields:list[str] = translit_dict_file.readline().strip().split(delimiter)
+            word_idx:int = 0
+            translitn_idx: int = 0
+
+            field_count = len(first_line_fields)
+            
+            if field_count < 2:
+                raise ValueError(f"{len(first_line_fields)} fields present in line 1. Each line must have at least 2 fields!")
+            
+            if (word_hdr not in first_line_fields) or (translitn_hdr not in first_line_fields):
+                if field_count > 2:
+                    raise ValueError(f'Provided headers are not present in file {src_path}. Please supply correct headers or check the file.')
+                word_idx = 0
+                translitn_idx = 1
+            else:
+                word_idx = first_line_fields.index(word_hdr)
+                translitn_idx = first_line_fields.index(translitn_hdr)
+
             for line in translit_dict_file:
                 fields = line.strip().split(delimiter)
                 translit_dict[fields[word_idx]] = fields[translitn_idx]
