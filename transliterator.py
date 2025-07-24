@@ -67,7 +67,7 @@ class TranslitDict(dict[str, str]):
                     raise ValueError(f'Provided headers are not present in file {src_path}. Please supply correct headers or check the file.')
                 word_idx = 0
                 translitn_idx = 1
-                translit_dict[fields[word_idx]] = fields[translitn_idx]
+                translit_dict[first_line_fields[word_idx]] = first_line_fields[translitn_idx]
             else:
                 word_idx = first_line_fields.index(word_hdr)
                 translitn_idx = first_line_fields.index(translitn_hdr)
