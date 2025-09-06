@@ -74,7 +74,7 @@ class TranslitDict(dict[str, str]):
 
             for line in translit_dict_file:
                 fields = line.strip().split(delimiter)
-                translit_dict[fields[word_idx]] = fields[translitn_idx]
+                translit_dict[fields[word_idx].strip()] = fields[translitn_idx].strip()
         return translit_dict
 
     @classmethod
