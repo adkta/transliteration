@@ -78,7 +78,7 @@ class TranslitDict(dict[str, str]):
         return translit_dict
 
     @classmethod
-    def create(cls, transcr_src: str, translitr: "Transliterator", encoding:str = _FILE_ENCODING, transcr_name_pattern: str = r"transcript.txt$") -> "TranslitDict":
+    def create(cls, transcr_src: str, translitr: "Transliterator", encoding:str = _FILE_ENCODING, id_label_delim: Optional[str] = None, transcr_name_pattern: str = r"transcript.txt$") -> "TranslitDict":
         """
         Create a transliteration dictionary for given words
         :param transcr_src: str path to the file or folder containing list of words or a corpus. If a folder is provided, one can specify transcr_name_pattern argument. Chooses words using Transliterator.for_transliteration. 
@@ -94,28 +94,34 @@ class TranslitDict(dict[str, str]):
         if not transcr_src_path.exists():
             raise FileNotFoundError(f"Path {transcr_src_path.absolute()} does not exist!")
         if transcr_src_path.is_file():
-            return cls._create_from_file(transcr_src, translitr, tknzr_pattern, encoding)
+            return cls._create_from_file(transcr_src, translitr, tknzr_pattern, encoding, id_label_delim)
         if transcr_src_path.is_dir():
             transcr_paths = get_matching_files(data_fol = transcr_src_path, file_pattern = transcr_name_pattern)
             translit_dict = TranslitDict()
             for transcr_path in transcr_paths:
-                translit_dict.update(cls._create_from_file(transcr_path, translitr, tknzr_pattern, encoding))
+                translit_dict.update(cls._create_from_file(transcr_path, translitr, tknzr_pattern, encoding, id_label_delim))
             return translit_dict
 
     @classmethod
-    def _create_from_file(cls, transcr_src: str, translitr: "Transliterator", tknzr_pattern: re.Pattern, encoding:str = _FILE_ENCODING) -> "TranslitDict":
+    def _create_from_file(cls, transcr_src: str, translitr: "Transliterator", tknzr_pattern: re.Pattern, encoding:str = _FILE_ENCODING, id_label_delim: Optional[str] = None) -> "TranslitDict":
         logger.info(f"Extracting dictionary from file: {transcr_src}...")
         translit_dict = TranslitDict()
         with open(transcr_src, encoding = encoding) as lines:
             for line in lines:
-                translit_dict.update(cls._create_from_line(line, translitr, tknzr_pattern))
+                translit_dict.update(cls._create_from_line(line, translitr, tknzr_pattern, id_label_delim))
         return translit_dict
     
     @classmethod
-    def _create_from_line(cls, line: str, translitr: "Transliterator", tknzr_pattern: Union[str, re.Pattern]) -> "TranslitDict":
+    def _create_from_line(cls, line: str, translitr: "Transliterator", tknzr_pattern: Union[str, re.Pattern], id_label_delim: Optional[str] = None) -> "TranslitDict":
         line.strip()
         if not line:
             return None
+        
+        if id_label_delim:
+            label = line.split(id_label_delim)[1]
+            label.strip('\s,"?.|')
+            line = label
+
         translit_dict = TranslitDict()
         tokens = tknzr_pattern.split(line)
         logger.debug(f"Split into: {tokens}")
