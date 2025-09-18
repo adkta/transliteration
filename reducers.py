@@ -7,10 +7,14 @@ class DevanagariReducer(RomanToDevaTransliterator):
         return True if word else False
 
     def translit_using_rules(self, word: str) -> Optional[str]:
-        translit_word = super().translit_using_rules(word)
+        # translit_word = super().translit_using_rules(word)
+        translit_word = super().translit_using_dict(word)
         if not translit_word:
-            return self.get_reduced_devanagari_word(word)
-        return self.get_reduced_devanagari_word(translit_word)
+            translit_word = word
+        reduced_word = self.get_reduced_devanagari_word(translit_word)
+        if reduced_word == word:
+            return None
+        return reduced_word
 
     def get_reduced_devanagari_word(self, deva_word: str) -> str:
         reduced_word = []
