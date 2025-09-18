@@ -2,6 +2,7 @@ from typing import Union, Optional
 from pathlib import Path
 import json
 import re
+from tqdm import tqdm
 from transliteration import logger
 from transliteration.utils import get_matching_files
 
@@ -107,7 +108,7 @@ class TranslitDict(dict[str, str]):
         logger.info(f"Extracting dictionary from file: {transcr_src}...")
         translit_dict = TranslitDict()
         with open(transcr_src, encoding = encoding) as lines:
-            for line in lines:
+            for line in tqdm(lines, desc = f"Extracting dictionary from file: {transcr_src}"):
                 translit_dict.update(cls._create_from_line(line, translitr, tknzr_pattern, id_label_delim))
         return translit_dict
     
@@ -125,11 +126,19 @@ class TranslitDict(dict[str, str]):
         translit_dict = TranslitDict()
         tokens = tknzr_pattern.split(line)
         logger.debug(f"Split into: {tokens}")
+
         for token in tokens:
             logger.debug(f"Attempting transliteration of {token}...")
             if translitr.for_transliteration(word=token):
-                translit_dict[token] = translitr.translit(token)
-            logger.debug(f"Transliterated {token} and saved to dictionary")
+                translitn = translitr.translit(token)
+                if not translitn:
+                    logger.debug(f"Could not transliterate token {token} despite passing Transliterator.for_transliteration() check. Please transliterate manually. Skipping...")
+                    continue
+                translit_dict[token] = translitn
+                logger.debug(f"Transliterated {token} and saved to dictionary")
+            else:
+                logger.debug(f"{token} not suitable for transliteration (see Transliterator.for_transliteration() method)")
+
         return translit_dict
 
     def export(self, dest_path: str, delimiter: str = DEFAULT_DELIMITER, headers:tuple[str] = DEFAULT_HEADERS, exp_mode:str = 'w', encoding:str = _FILE_ENCODING) -> None:
@@ -231,7 +240,7 @@ class Transliterator():
         if not out:
             out = self.translit_using_rules(word)
         if not out:
-            logger.info(f"Transliteration failed for {word=}. The word to transliterate wasn't sent in the source script or it isn't present in cmudict.")
+            logger.debug(f"Transliteration failed for {word=}. The word to transliterate wasn't sent in the source script or it isn't present in cmudict.")
         return out
 
     def translit_using_rules(self, word: str) -> Optional[str]:
