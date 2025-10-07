@@ -1,4 +1,4 @@
-def get_reduced_devanagari_word(self, deva_word: str) -> str:
+def get_reduced_devanagari_word(deva_word: str) -> str:
     reduced_word = []
     for ch in deva_word:
         if ch == 'ई':
