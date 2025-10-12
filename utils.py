@@ -20,3 +20,16 @@ def get_matching_files(data_fol: str, file_pattern: str) -> Generator[str, None,
             for f in files:
                 if file_pattern.search(f):
                     yield os.path.join(dirpath, f)
+
+def get_reverse_dict(dictionary: dict[str, str]) -> dict[str, list[str]]:
+    """
+    :param dictionary: dict[str, str]
+    :return: dict[str, list[str]] Returns a reverse dictionary with values being list to account for many-to-one key-value relationships in original dictionary
+    """
+    reverse_dict = dict()
+    for k,v in dictionary.items():
+        if v in reverse_dict:
+            reverse_dict[v].append(k)
+        else:
+            reverse_dict[v] = [k]
+    return reverse_dict
