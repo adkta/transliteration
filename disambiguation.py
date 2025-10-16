@@ -32,7 +32,7 @@ def stride(coleczn: list|dict, counter: int, window_size: int) -> tuple[int, lis
     counter += 1
 
     if isinstance(coleczn, list):
-        return coleczn[l_idx: r_idx]
+        return counter, coleczn[l_idx: r_idx]
 
     return counter, dict(list(coleczn.items())[l_idx:r_idx])
 
