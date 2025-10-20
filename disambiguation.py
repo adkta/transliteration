@@ -2,6 +2,7 @@ from itertools import product
 from math import e as exp
 
 from transliteration.utils import isEnglish, multiply_common_keys, normalize_scores
+from transliteration import logger
 
 def native_scoring(word: str, reverse_dict: dict[str, list[str]]) -> dict[str, float]:
     """
@@ -10,6 +11,7 @@ def native_scoring(word: str, reverse_dict: dict[str, list[str]]) -> dict[str, f
     """
     if word in reverse_dict:
         native_candidates = reverse_dict[word]
+        native_candidates.append(word)
         tot_candidates = len(native_candidates)
         return {candidate: round(1.0/tot_candidates, 2) for candidate in native_candidates}
 
@@ -96,7 +98,7 @@ def language_model_scoring(window: dict[str, dict[str, float]], red_word: str, m
         lang_model_probs_for_nativ: list[float] = [] # list of all lm probabilities for a native candidate.
         for red_word_cand_list in red_word_cand_sent_list:
             red_word_cand = " ".join(red_word_cand_list)
-            print(f"{red_word}: {native} : {red_word_cand}")
+            logger.debug(f"{red_word}: {native} : {red_word_cand}")
             lang_model_probs_for_nativ.append(model.score(red_word_cand))
             # lang_model_probs_for_nativ.append(-4.0)
         lang_model_nativ_score_map[native] = exp**max(lang_model_probs_for_nativ)
