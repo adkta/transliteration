@@ -33,3 +33,16 @@ def get_reverse_dict(dictionary: dict[str, str]) -> dict[str, list[str]]:
         else:
             reverse_dict[v] = [k]
     return reverse_dict
+
+def multiply_common_keys(map_one: dict, map_two: dict) -> dict:
+    combined_dict = dict()
+    for k in map_one:
+        assert k in map_two
+        combined_dict[k] = map_one[k] * map_two[k]
+    return combined_dict
+
+def normalize_scores(score_map: dict[str, float]) -> dict[str, float]:
+    sum_score = sum(score_map.values())
+    for item, score in score_map.items():
+        score_map[item] = round(score/sum_score, 2)
+    return score_map
