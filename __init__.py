@@ -1,7 +1,9 @@
 import logging
 from pathlib import Path
+from importlib.resources import files
 
-_log_path = Path("./transliteration/logs/transliteration.log")
+# _log_path = Path("./transliteration/logs/transliteration.log")
+_log_path = files("transliteration.logs").joinpath("transliteration.log")
 if not _log_path.parent.exists():
     _log_path.parent.mkdir()
 
