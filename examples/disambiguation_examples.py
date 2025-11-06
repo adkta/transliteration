@@ -1,7 +1,7 @@
-from transliteration.disambiguation import native_scoring, scoring, language_model_score, combined_scoring
+from transliteration.disambiguation import get_native_candidates, native_scoring, scoring, language_model_score, combined_scoring
 
-def correct_spelling(word:str)-> str:
-    return word
+def correct_spelling(word:str)-> set[str]:
+    return [word]
 
 def get_words_from_sentence(sentence: str)-> list:
     return sentence.split(" ")
@@ -16,9 +16,10 @@ def disambiguate(sentence: str, model, reverse_dict) -> str:
     words = get_words_from_sentence(sentence)
     nativ_scored_map: dict[str, dict[str, float]] = dict() #values will also have native scoring. Therefore we opt for dict data type for values
     for word in words:
-        spelling_corrected_word = correct_spelling(word)
-        native_candidates = native_scoring(spelling_corrected_word, reverse_dict)
-        nativ_scored_map[spelling_corrected_word] = native_candidates
+        spell_corrs = correct_spelling(word)
+        candidates = get_native_candidates(spell_corrs, reverse_dict)
+        scored_candidates = native_scoring(candidates)
+        nativ_scored_map[word] = scored_candidates
 
     norm_lang_scored_map = scoring(nativ_scored_map, window_size = 5)
     lang_model_score_map = language_model_score(nativ_scored_map, window_size = 5, model=model)

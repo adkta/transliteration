@@ -4,18 +4,21 @@ from math import e as exp
 from transliteration.utils import isEnglish, multiply_common_keys, normalize_scores
 from transliteration import logger
 
-def native_scoring(word: str, reverse_dict: dict[str, list[str]]) -> dict[str, float]:
+def get_native_candidates(words: list[str]|set[str], reverse_dict: dict[str, str]) -> set[str]:
+    candidates = set()
+    for word in words:
+        candidates.add(word)
+        if word in reverse_dict:
+            candidates.update(reverse_dict[word])
+    return candidates
+
+def native_scoring(candidates: list[str]) -> dict[str, float]:
     """
     :param word: str
     :return: list along with native probabilities
     """
-    if word in reverse_dict:
-        native_candidates = reverse_dict[word]
-        native_candidates.append(word)
-        tot_candidates = len(native_candidates)
-        return {candidate: round(1.0/tot_candidates, 2) for candidate in native_candidates}
-
-    return {word: 1.0}
+    tot_candidates = len(candidates)
+    return {candidate: round(1.0/tot_candidates, 2) for candidate in candidates}
 
 def stride(coleczn: list|dict, counter: int, window_size: int) -> tuple[int, list|dict]:
     """
