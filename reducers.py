@@ -1,5 +1,8 @@
+from transliteration import logger
+
 def get_reduced_devanagari_word(deva_word: str) -> str:
     reduced_word = []
+    logger.debug(deva_word)
     for ch in deva_word:
         if ch == 'ई':
             reduced_word.append('इ')

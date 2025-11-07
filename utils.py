@@ -11,6 +11,21 @@ def is_comma(unicode_point: str) -> bool:
 def is_question_mark(unicode_point: str) -> bool:
     return unicode_point == 63
 
+def is_percentage(unicode_point: int) -> bool:
+    return unicode_point == 37
+
+def is_Devanagari_period(unicode_point: int) -> bool:
+    return unicode_point == 2404
+
+def is_ZWNJ(unicode_point: int) -> bool: #Zero-Width Joiner
+    return unicode_point == 8204
+
+def is_ZWJ(unicode_point: int) -> bool: #Zero-Width Non-Joiner
+    return unicode_point == 8205
+
+def is_LRM(unicode_point: int) -> bool: #Left-to_Right Mark (Directional)
+    return unicode_point == 8206
+
 def isEnglish(word: str) -> bool:
   return word.isascii()
 
