@@ -10,7 +10,7 @@ from transliteration.utils import get_matching_files
 class TranslitDict(dict[str, str]):
 
     _FILE_ENCODING = 'utf-8'
-    PUNCT_SPACE_REGEX = r"[\s\.\?\|!\",।]+"
+    PUNCT_SPACE_REGEX = r"[\s\.\?\|!\",।-]+"
     DEFAULT_HEADERS = ("Word","Transliteration")
     DEFAULT_DELIMITER = ","
 
