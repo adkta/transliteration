@@ -1,11 +1,14 @@
-from transliteration.disambiguation import get_native_candidates, native_scoring, scoring, language_model_score, combined_scoring
+from typing import Optional
 from symspellpy import Verbosity
 from symspellpy.suggest_item import SuggestItem
+from transliteration.disambiguation import get_native_candidates, native_scoring, scoring, language_model_score, combined_scoring
 
-def correct_spelling(word:str, sym_spell)-> set[str]:
-    # sugg_item_list: list[SuggestItem] = sym_spell.lookup(word, Verbosity.CLOSEST, max_edit_distance=2, include_unknown=True)
-    # return {sugg_item.term for sugg_item in sugg_item_list}
-    return [word]
+def correct_spelling(word:str, sym_spell, edit_dist: Optional[int] = None)-> set[str]:
+    spell_corrs = [word]
+    if sym_spell:
+        sugg_item_list: list[SuggestItem] = sym_spell.lookup(word, Verbosity.CLOSEST, max_edit_distance=2, include_unknown=True)
+        spell_corrs = {sugg_item.term for sugg_item in sugg_item_list}
+    return spell_corrs
 
 def get_words_from_sentence(sentence: str)-> list:
     return sentence.split(" ")
@@ -16,7 +19,7 @@ def get_native_sentence(score_map: dict[str, dict[str, float]]) -> str:
         native_sentence.append(max(score_map[red_word], key=score_map[red_word].get))
     return " ".join(native_sentence)
 
-def disambiguate(sentence: str, model, reverse_dict, sym_spell, lang_scoring:bool = True) -> str:
+def disambiguate(sentence: str, model, reverse_dict, sym_spell, edit_dist: Optional[int] = None, lang_scoring:bool = True) -> str:
     words = get_words_from_sentence(sentence)
     nativ_scored_map: dict[str, dict[str, float]] = dict() #values will also have native scoring. Therefore we opt for dict data type for values
     for word in words:
