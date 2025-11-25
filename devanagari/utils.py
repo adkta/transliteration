@@ -63,7 +63,7 @@ def base_word(word: str) -> str:
     return NEP_WORD
 
 
-def handle_plural_case_markers(word:str, sep_deva: bool = False) -> tuple[str, str]:
+def handle_plural_and_case_markers(word:str, sep_deva: bool = False) -> tuple[str, str]:
     """
     Separates case markers or plurals attached to word. Expective text from Nepali-English code-mixed corpus or Nepali corpus
     :param word: str Word to check for case markers
@@ -71,8 +71,8 @@ def handle_plural_case_markers(word:str, sep_deva: bool = False) -> tuple[str, s
     :return: tuple[str, int] Returns a tuple of original word and empty string if no case markers. If there are case markers,
                              returns a tuple of space separated word and base word type: eng, nep for words and en, dev for numeral
     """
-    idx = find_plural_case_marker(word)
-    return split_plural_case_markers(word, idx, sep_deva)
+    idx = find_plural_and_case_marker(word)
+    return split_plural_and_case_markers(word, idx, sep_deva)
 
 
 def get_plural() -> str:
@@ -83,7 +83,7 @@ def get_case_markers() -> list[str]:
     return ['को', 'लाई', 'बाट', 'मा', 'ले']
 
 
-def find_plural_case_marker(word: str) -> int:
+def find_plural_and_case_marker(word: str) -> int:
     plur = get_plural()
     case_markers = get_case_markers()
     idx =  word.find(plur)
@@ -95,7 +95,7 @@ def find_plural_case_marker(word: str) -> int:
                     break
     return idx
 
-def split_plural_case_markers(word: str, idx: int, sep_deva: bool = False) -> tuple[str, str]:
+def split_plural_and_case_markers(word: str, idx: int, sep_deva: bool = False) -> tuple[str, str]:
     sub_1 = ''
     sub_2 = ''
     base_wrd = ''
@@ -107,4 +107,39 @@ def split_plural_case_markers(word: str, idx: int, sep_deva: bool = False) -> tu
         if sep_deva or base_wrd != NEP_WORD: #separates if sep_deva is True . If false, separates all cases except for devanagari base word
             word = f"{sub_1} {sub_2}"
     return (word, base_wrd)
+
+
+def is_token_plural_or_case_marker(word:str) -> bool:
+    plur = get_plural()
+    case_markers = get_case_markers()
+    return word.startswith(plur) or word in case_markers
+    
+
+def rejoin_plural_and_case_markers(sentence: str|list[str]) -> str:
+    """
+    Append devanagari plural or case marker to previous word if the previous word is devanagari
+    """
+    if not sentence:
+        return None
+
+    if isinstance(sentence, str):
+        sentence = sentence.split()
+
+    sentence_out = ''
+    i = 0
+    sen_len = len(sentence)
+    for i in range(sen_len):
+        if i == 0:
+            sentence_out = sentence[i]
+            continue
+        if is_token_plural_or_case_marker(sentence[i]) and is_devanagari_token(sentence[i-1]):
+            sentence_out += sentence[i]
+            continue
+
+        sentence_out += f" {sentence[i]}"
+
+    return sentence_out
+
+
+    
 
