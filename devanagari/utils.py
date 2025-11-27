@@ -63,7 +63,7 @@ def base_word(word: str) -> str:
     return NEP_WORD
 
 
-def handle_plural_and_case_markers(word:str, sep_deva: bool = False) -> tuple[str, str]:
+def sep_plural_n_case_markers(word:str, sep_deva: bool = False) -> tuple[str, str]:
     """
     Separates case markers or plurals attached to word. Expective text from Nepali-English code-mixed corpus or Nepali corpus
     :param word: str Word to check for case markers
@@ -72,7 +72,7 @@ def handle_plural_and_case_markers(word:str, sep_deva: bool = False) -> tuple[st
                              returns a tuple of space separated word and base word type: eng, nep for words and en, dev for numeral
     """
     idx = find_plural_and_case_marker(word)
-    return split_plural_and_case_markers(word, idx, sep_deva)
+    return split_at_idx(word, idx, sep_deva)
 
 
 def get_plural() -> str:
@@ -95,7 +95,7 @@ def find_plural_and_case_marker(word: str) -> int:
                     break
     return idx
 
-def split_plural_and_case_markers(word: str, idx: int, sep_deva: bool = False) -> tuple[str, str]:
+def split_at_idx(word: str, idx: int, sep_deva: bool = False) -> tuple[str, str]:
     sub_1 = ''
     sub_2 = ''
     base_wrd = ''
@@ -115,7 +115,7 @@ def is_token_plural_or_case_marker(word:str) -> bool:
     return word.startswith(plur) or word in case_markers
     
 
-def rejoin_plural_and_case_markers(sentence: str|list[str]) -> str:
+def join_plural_and_case_markers(sentence: str|list[str]) -> str:
     """
     Append devanagari plural or case marker to previous word if the previous word is devanagari
     """
