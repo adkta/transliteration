@@ -115,7 +115,7 @@ def is_token_plural_or_case_marker(word:str) -> bool:
     return word.startswith(plur) or word in case_markers
     
 
-def join_plural_and_case_markers(sentence: str|list[str]) -> str:
+def join_plural_n_case_markers(sentence: str|list[str]) -> str:
     """
     Append devanagari plural or case marker to previous word if the previous word is devanagari
     """
