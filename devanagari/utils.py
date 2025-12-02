@@ -47,7 +47,7 @@ def is_devanagari_token(word: str) -> bool:
     return True
 
 
-def base_word(word: str) -> str:
+def word_type(word: str) -> str:
     """
     Determines the type of base_word based on the script. 
     The type maybe Devanagari numeral ('ne')
@@ -98,15 +98,15 @@ def find_plural_and_case_marker(word: str) -> int:
 def split_at_idx(word: str, idx: int, sep_deva: bool = False) -> tuple[str, str]:
     sub_1 = ''
     sub_2 = ''
-    base_wrd = ''
+    base_type = ''
 
     if idx not in  (0,-1):
         sub_1 = word[:idx]
         sub_2 = word[idx:]
-        base_wrd = base_word(sub_1)
-        if sep_deva or base_wrd != NEP_WORD: #separates if sep_deva is True . If false, separates all cases except for devanagari base word
+        base_type = word_type(sub_1)
+        if sep_deva or base_type != NEP_WORD: #separates if sep_deva is True . If false, separates all cases except for devanagari base word
             word = f"{sub_1} {sub_2}"
-    return (word, base_wrd)
+    return (word, base_type)
 
 
 def is_token_plural_or_case_marker(word:str) -> bool:
@@ -140,6 +140,8 @@ def join_plural_n_case_markers(sentence: str|list[str]) -> str:
 
     return sentence_out
 
-
-    
-
+def word_is_split(base_type: str, sep_deva: bool) -> bool:
+    """
+    Checks if case marker found and the word is split for sure
+    """
+    return base_type and ( sep_deva or base_type != NEP_WORD)
