@@ -11,15 +11,18 @@ def correct_spelling(word:str, sym_spell, edit_dist: Optional[int] = None)-> set
         spell_corrs = {sugg_item.term for sugg_item in sugg_item_list}
     return spell_corrs
 
-def split_plural_n_case_markers(sen: str, reverse_dict:dict, sep_deva:bool = False) -> str:
+def split_plural_n_case_markers(sen: str, reverse_dict:Optional[dict] = None, sep_deva:bool = False) -> str:
+    """
+    Separate case markers from words in a sentence.
+    """
     words = get_words_from_sentence(sen)
     out_words = list()
     for word in words:
-        if word not in reverse_dict: #split if word isn't found in reduc dict
+        if not reverse_dict or (word not in reverse_dict): #split if word isn't found in reduc dict
             sep_wrd, base_type = sep_plural_n_case_markers(word, sep_deva)
             if word_is_split(base_type, sep_deva): 
                 base_wrd = sep_wrd.split()[0]
-                if base_wrd in reverse_dict: # We honour the split if word is found in reduc dict
+                if not reverse_dict or (base_wrd in reverse_dict): # We honour the split if word is found in reduc dict
                     word = sep_wrd
         out_words.append(word)
     return " ".join(out_words)
