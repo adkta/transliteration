@@ -35,10 +35,8 @@ def get_native_sentence(score_map: list[tuple[str, dict[str, float]]], sep_case_
     for red_word, cand_score_map in score_map:
         native_sentence.append(max(cand_score_map, key=cand_score_map.get))
     sen = " ".join(native_sentence)
-    print(f"BEFORE JOIN: {sen}")
     if sep_case_plural:
         sen = join_plural_n_case_markers(sen)
-    print(f"AFTER JOIN: {sen}")
     return sen
 
 
