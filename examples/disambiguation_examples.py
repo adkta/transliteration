@@ -30,13 +30,15 @@ def split_plural_n_case_markers(sen: str, reverse_dict:Optional[dict] = None, se
 def get_words_from_sentence(sentence: str)-> list:
     return sentence.split(" ")
 
-def get_native_sentence(score_map: dict[str, dict[str, float]], sep_case_plural:bool = False) -> str:
+def get_native_sentence(score_map: list[tuple[str, dict[str, float]]], sep_case_plural:bool = False) -> str:
     native_sentence = []
-    for red_word in score_map:
-        native_sentence.append(max(score_map[red_word], key=score_map[red_word].get))
+    for red_word, cand_score_map in score_map:
+        native_sentence.append(max(cand_score_map, key=cand_score_map.get))
     sen = " ".join(native_sentence)
+    print(f"BEFORE JOIN: {sen}")
     if sep_case_plural:
         sen = join_plural_n_case_markers(sen)
+    print(f"AFTER JOIN: {sen}")
     return sen
 
 
@@ -50,18 +52,21 @@ def disambiguate(sentence: str,
     if sep_case_plural:
         sentence = split_plural_n_case_markers(sen = sentence, reverse_dict=reverse_dict, sep_deva = True)
     words = get_words_from_sentence(sentence)
-    nativ_scored_map: dict[str, dict[str, float]] = dict() #values will also have native scoring. Therefore we opt for dict data type for values
+    nativ_scored_map: list[tuple[str, dict[str, float]]] = list() #values will also have native scoring. Therefore we opt for list (of tuples) data type for values
     for word in words:
         spell_corrs = correct_spelling(word, sym_spell)
         candidates = get_native_candidates(spell_corrs, reverse_dict)
         scored_candidates = native_scoring(candidates)
-        nativ_scored_map[word] = scored_candidates
+        nativ_scored_map.append((word, scored_candidates))
 
-    norm_lang_scored_map = dict()
+    print(nativ_scored_map)
+    norm_lang_scored_map: list[tuple[str, dict[str, float]]] = list()
     if lang_scoring:
         norm_lang_scored_map = scoring(nativ_scored_map, window_size = 5)
     else:
         norm_lang_scored_map = nativ_scored_map
     lang_model_score_map = language_model_score(nativ_scored_map, window_size = 5, model=model, sep_case_plural=sep_case_plural)
+    print(norm_lang_scored_map)
+    print(lang_model_score_map)
     combined_score_map = combined_scoring(norm_lang_scored_map, lang_model_score_map)
     return get_native_sentence(combined_score_map, sep_case_plural)

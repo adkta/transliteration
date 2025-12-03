@@ -46,46 +46,46 @@ def stride(coleczn: list|dict, counter: int, window_size: int) -> tuple[int, lis
     return counter, dict(list(coleczn.items())[l_idx:r_idx])
 
 
-def scoring(rev_reduc_map: dict[str, dict[str, float]], window_size: int) -> dict[str, dict[str, float]]:
+def scoring(score_map: list[tuple[str, dict[str, float]]], window_size: int) -> list[tuple[str, dict[str, float]]]:
     """
-    :param reduction_map: dict[str, dict[str, float]] Sends the whole sentence/phrase to be reversed to native. Format: key = reduced, value = {native_1: score_1, native_2: score_2...}
+    :param score_map: list[tuple[str, dict[str, float]]] Sends the whole sentence/phrase to be reversed to native. Each tuple format: Element 1 (str)= reduced, Element 2 (dict) = {native_1: score_1, native_2: score_2...}
     :param window_size: int Window size for language scoring
     :return: dict[str, dict[str, float]] Returns normalized language scored map. Format: key = reduced, value = {native_1: normalized_lang_score_1, native_2: normalized_lang_score_2...}
     """
-    norm_lang_scored_map = dict()
+    norm_lang_scored_map = list()
     counter = 0
-    for red_word in rev_reduc_map:
+    for red_word, cand_score_map in score_map:
         #windowing
-        counter, window = stride(rev_reduc_map, counter, window_size)
-        norm_lang_scored_map[red_word] = language_scoring(window, red_word)
+        counter, window = stride(score_map, counter, window_size)
+        norm_lang_scored_map.append((red_word,language_scoring(window, red_word, cand_score_map)))
     return norm_lang_scored_map
 
-def language_model_score(native_score_map: dict[str, dict[str, float]], window_size: int, model, sep_case_plural: bool = False) -> dict[str, dict[str, float]]:
+def language_model_score(native_score_map: list[tuple[str, dict[str, float]]], window_size: int, model, sep_case_plural: bool = False) -> list[tuple[str, dict[str, float]]]:
     """
-    :param native_score_map: dict key = reduced word, value = dictionary with candidate native words as keys, scores as values
+    :param native_score_map: list[tuple[str, dict[str, float]] Element 1 = reduced word, Element 2 = dictionary with candidate native words as keys, scores as values
     :param window_size: int Window to create sentence from
     :param model: kenlm.LanguageModel kenlm model 
-    :return: dict key = reduced word, value = dictionary with candidate native words as keys, best(maximum) lm probability out of all sentences for the native word as values
+    :return: list[tuple[str, dict[str, float]] Element 1 = reduced word, Element 2 = dictionary with candidate native words as keys, best(maximum) lm probability out of all sentences for the native word as values
     """
-    lang_model_score_map = dict()
+    lang_model_score_map = list()
     counter = 0
-    for red_word in native_score_map:
+    for red_word, cand_score_map in native_score_map:
         counter, window = stride(native_score_map, counter, window_size)
-        lang_model_score_map[red_word] = language_model_scoring(window, red_word, model, sep_case_plural)
+        lang_model_score_map.append((red_word, language_model_scoring(window, red_word, cand_score_map, model, sep_case_plural)))
     return lang_model_score_map
 
-def language_scoring(window: dict[str, dict[str, float]], red_word: str)-> dict[str, float]:
-    nep_score = 0
-    eng_score = 0
-    for reduc_word in window:
-        for nativ, score in window[reduc_word].items():
+def language_scoring(window: list[tuple[str, dict[str, float]]], red_word: str, candid_score_map: dict[str, float])-> dict[str, float]:
+    nep_score = 0 #Initial total score for Nepali in window
+    eng_score = 0 #Initial total score for English in window
+    for reduc_word, cand_score_map in window:
+        for nativ, score in cand_score_map.items():
             if isEnglish(nativ):
                 eng_score += score
             else:
                 nep_score += score
 
     lang_scored_map = dict()
-    for nativ, score in window[red_word].items():
+    for nativ, score in candid_score_map.items():
         if isEnglish(nativ):
             score = score * eng_score
         else:
@@ -94,10 +94,10 @@ def language_scoring(window: dict[str, dict[str, float]], red_word: str)-> dict[
 
     return normalize_scores(lang_scored_map)
 
-def language_model_scoring(window: dict[str, dict[str, float]], red_word: str, model, sep_case_plural:bool = False) -> dict[str, float]:
+def language_model_scoring(window: list[tuple[str, dict[str, float]]], red_word: str, candid_score_map: dict[str, float], model, sep_case_plural:bool = False) -> dict[str, float]:
     lang_model_nativ_score_map = dict() # keys = native candidates for red_word, score = best lm probability
-    for native in window[red_word].keys():
-        option_seq = [[native] if k == red_word else v.keys() for k, v in window.items()] #list of list
+    for native in candid_score_map.keys():
+        option_seq = [[native] if k == red_word else v.keys() for k, v in window] #list of list
         red_word_cand_sent_list = product(*option_seq) #all possible list
         lang_model_probs_for_nativ: list[float] = [] # list of all lm probabilities for a native candidate.
         for red_word_cand_sen in red_word_cand_sent_list:
@@ -110,14 +110,17 @@ def language_model_scoring(window: dict[str, dict[str, float]], red_word: str, m
         lang_model_nativ_score_map[native] = exp**max(lang_model_probs_for_nativ)
     return lang_model_nativ_score_map
 
-def combined_scoring(native_score_map: dict[str, dict[str, float]], lang_model_score_map: dict[str, dict[str, float]]) -> dict[str, dict[str, float]]:
+def combined_scoring(native_score_map: list[tuple[str, dict[str, float]]], lang_model_score_map: list[tuple[str, dict[str, float]]]) -> list[tuple[str, dict[str, float]]]:
     """
-    :param native_score_map: dict key = reduced word, value = dictionary with candidate native words as keys, scores as values
-    :param lang_model_score_map: dict key = reduced word, value = dictionary with candidate native words as keys
+    :param native_score_map: list[tuple[str, dict[str, float]]] Element 1 = reduced word, Element 2 = dictionary with candidate native words as keys, scores as values
+    :param lang_model_score_map: list[tuple[str, dict[str, float]]] Element 1 = reduced word, Element 2 = dictionary with candidate native words as keys
     """
-    combined_score_map = dict()
-    for red_word in native_score_map:
-        combined_reduc_map = normalize_scores(multiply_common_keys(native_score_map[red_word], lang_model_score_map[red_word]))
-        combined_score_map[red_word] = combined_reduc_map
+    combined_score_map = list()
+    for nativ, lang_mod in zip(native_score_map, lang_model_score_map):
+        nat_red_word, nativ_score = nativ
+        l_m_red_word, l_m_score = lang_mod
+        assert nat_red_word == l_m_red_word
+        combined_reduc_map = normalize_scores(multiply_common_keys(nativ_score, l_m_score))
+        combined_score_map.append((nat_red_word, combined_reduc_map))
     return combined_score_map
 
