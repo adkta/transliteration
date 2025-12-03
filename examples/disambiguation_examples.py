@@ -59,14 +59,11 @@ def disambiguate(sentence: str,
         scored_candidates = native_scoring(candidates)
         nativ_scored_map.append((word, scored_candidates))
 
-    print(nativ_scored_map)
     norm_lang_scored_map: list[tuple[str, dict[str, float]]] = list()
     if lang_scoring:
         norm_lang_scored_map = scoring(nativ_scored_map, window_size = 5)
     else:
         norm_lang_scored_map = nativ_scored_map
     lang_model_score_map = language_model_score(nativ_scored_map, window_size = 5, model=model, sep_case_plural=sep_case_plural)
-    print(norm_lang_scored_map)
-    print(lang_model_score_map)
     combined_score_map = combined_scoring(norm_lang_scored_map, lang_model_score_map)
     return get_native_sentence(combined_score_map, sep_case_plural)
