@@ -2,9 +2,9 @@ from typing import Optional
 from symspellpy import Verbosity
 from symspellpy.suggest_item import SuggestItem
 from transliteration.disambiguation import get_native_candidates, native_scoring, scoring, language_model_score, combined_scoring
-from transliteration.devanagari.utils import sep_plural_n_case_markers, NEP_WORD, word_is_split
+from transliteration.devanagari.utils import sep_plural_n_case_markers, join_plural_n_case_markers, word_is_split
 
-def correct_spelling(word:str, sym_spell, edit_dist: Optional[int] = None)-> set[str]:
+def correct_spelling(word:str, sym_spell = None, edit_dist: Optional[int] = None)-> set[str]:
     spell_corrs = [word]
     if sym_spell:
         sugg_item_list: list[SuggestItem] = sym_spell.lookup(word, Verbosity.CLOSEST, max_edit_distance=2, include_unknown=True)
@@ -30,13 +30,25 @@ def split_plural_n_case_markers(sen: str, reverse_dict:Optional[dict] = None, se
 def get_words_from_sentence(sentence: str)-> list:
     return sentence.split(" ")
 
-def get_native_sentence(score_map: dict[str, dict[str, float]]) -> str:
+def get_native_sentence(score_map: dict[str, dict[str, float]], sep_case_plural:bool = False) -> str:
     native_sentence = []
     for red_word in score_map:
         native_sentence.append(max(score_map[red_word], key=score_map[red_word].get))
-    return " ".join(native_sentence)
+    sen = " ".join(native_sentence)
+    if sep_case_plural:
+        sen = join_plural_n_case_markers(sen)
+    return sen
 
-def disambiguate(sentence: str, model, reverse_dict, sym_spell, edit_dist: Optional[int] = None, lang_scoring:bool = True) -> str:
+
+def disambiguate(sentence: str,
+    model, 
+    reverse_dict, 
+    sym_spell = None, 
+    edit_dist: Optional[int] = None, 
+    lang_scoring:bool = True, 
+    sep_case_plural:bool = False) -> str:
+    if sep_case_plural:
+        sentence = split_plural_n_case_markers(sen = sentence, reverse_dict=reverse_dict, sep_deva = True)
     words = get_words_from_sentence(sentence)
     nativ_scored_map: dict[str, dict[str, float]] = dict() #values will also have native scoring. Therefore we opt for dict data type for values
     for word in words:
@@ -50,6 +62,6 @@ def disambiguate(sentence: str, model, reverse_dict, sym_spell, edit_dist: Optio
         norm_lang_scored_map = scoring(nativ_scored_map, window_size = 5)
     else:
         norm_lang_scored_map = nativ_scored_map
-    lang_model_score_map = language_model_score(nativ_scored_map, window_size = 5, model=model)
+    lang_model_score_map = language_model_score(nativ_scored_map, window_size = 5, model=model, sep_case_plural=sep_case_plural)
     combined_score_map = combined_scoring(norm_lang_scored_map, lang_model_score_map)
-    return get_native_sentence(combined_score_map)
+    return get_native_sentence(combined_score_map, sep_case_plural)

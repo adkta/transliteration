@@ -2,6 +2,7 @@ from itertools import product
 from math import e as exp
 
 from transliteration.utils import isEnglish, multiply_common_keys, normalize_scores
+from transliteration.devanagari.utils import join_plural_n_case_markers
 from transliteration import logger
 
 def get_native_candidates(words: list[str]|set[str], reverse_dict: dict[str, str]) -> set[str]:
@@ -59,7 +60,7 @@ def scoring(rev_reduc_map: dict[str, dict[str, float]], window_size: int) -> dic
         norm_lang_scored_map[red_word] = language_scoring(window, red_word)
     return norm_lang_scored_map
 
-def language_model_score(native_score_map: dict[str, dict[str, float]], window_size: int, model) -> dict[str, dict[str, float]]:
+def language_model_score(native_score_map: dict[str, dict[str, float]], window_size: int, model, sep_case_plural: bool = False) -> dict[str, dict[str, float]]:
     """
     :param native_score_map: dict key = reduced word, value = dictionary with candidate native words as keys, scores as values
     :param window_size: int Window to create sentence from
@@ -70,7 +71,7 @@ def language_model_score(native_score_map: dict[str, dict[str, float]], window_s
     counter = 0
     for red_word in native_score_map:
         counter, window = stride(native_score_map, counter, window_size)
-        lang_model_score_map[red_word] = language_model_scoring(window, red_word, model)
+        lang_model_score_map[red_word] = language_model_scoring(window, red_word, model, sep_case_plural)
     return lang_model_score_map
 
 def language_scoring(window: dict[str, dict[str, float]], red_word: str)-> dict[str, float]:
@@ -93,16 +94,18 @@ def language_scoring(window: dict[str, dict[str, float]], red_word: str)-> dict[
 
     return normalize_scores(lang_scored_map)
 
-def language_model_scoring(window: dict[str, dict[str, float]], red_word: str, model) -> dict[str, float]:
+def language_model_scoring(window: dict[str, dict[str, float]], red_word: str, model, sep_case_plural:bool = False) -> dict[str, float]:
     lang_model_nativ_score_map = dict() # keys = native candidates for red_word, score = best lm probability
     for native in window[red_word].keys():
         option_seq = [[native] if k == red_word else v.keys() for k, v in window.items()] #list of list
         red_word_cand_sent_list = product(*option_seq) #all possible list
         lang_model_probs_for_nativ: list[float] = [] # list of all lm probabilities for a native candidate.
-        for red_word_cand_list in red_word_cand_sent_list:
-            red_word_cand = " ".join(red_word_cand_list)
-            logger.debug(f"{red_word}: {native} : {red_word_cand}")
-            lang_model_probs_for_nativ.append(model.score(red_word_cand))
+        for red_word_cand_sen in red_word_cand_sent_list:
+            red_word_cand_sen = " ".join(red_word_cand_sen)
+            logger.debug(f"{red_word}: {native} : {red_word_cand_sen}")
+            if sep_case_plural:
+                red_word_cand_sen = join_plural_n_case_markers(red_word_cand_sen)
+            lang_model_probs_for_nativ.append(model.score(red_word_cand_sen))
             # lang_model_probs_for_nativ.append(-4.0)
         lang_model_nativ_score_map[native] = exp**max(lang_model_probs_for_nativ)
     return lang_model_nativ_score_map
