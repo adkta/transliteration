@@ -7,7 +7,7 @@ from transliteration.devanagari.utils import sep_plural_n_case_markers, join_plu
 def correct_spelling(word:str, sym_spell = None, edit_dist: Optional[int] = None)-> set[str]:
     spell_corrs = [word]
     if sym_spell:
-        sugg_item_list: list[SuggestItem] = sym_spell.lookup(word, Verbosity.CLOSEST, max_edit_distance=2, include_unknown=True)
+        sugg_item_list: list[SuggestItem] = sym_spell.lookup(word, Verbosity.CLOSEST, max_edit_distance=edit_dist, include_unknown=True)
         spell_corrs = {sugg_item.term for sugg_item in sugg_item_list}
     return spell_corrs
 
