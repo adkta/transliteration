@@ -52,7 +52,7 @@ def disambiguate(sentence: str,
     words = get_words_from_sentence(sentence)
     nativ_scored_map: list[tuple[str, dict[str, float]]] = list() #values will also have native scoring. Therefore we opt for list (of tuples) data type for values
     for word in words:
-        spell_corrs = correct_spelling(word, sym_spell)
+        spell_corrs = correct_spelling(word, sym_spell, edit_dist)
         candidates = get_native_candidates(spell_corrs, reverse_dict)
         scored_candidates = native_scoring(candidates)
         nativ_scored_map.append((word, scored_candidates))
