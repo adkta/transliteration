@@ -81,7 +81,7 @@ def get_plural() -> str:
 
 
 def get_case_markers() -> list[str]:
-    return ['को', 'लाई', 'बाट', 'मा', 'ले', 'मै', 'सम्म']
+    return ['को', 'लाई', 'बाट', 'मा', 'ले', 'मै', 'सम्म', 'औँ']
 
 
 def find_plural_and_case_marker(word: str) -> int:
