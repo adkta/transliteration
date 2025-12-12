@@ -61,10 +61,8 @@ def word_type(word: str) -> str:
         return num_type #'dev' or 'en'
     if translitutils.isEnglish(word):
         return ENG_WORD
-    if is_devanagari_token(word):
-        return NEP_WORD
-    return UNK_TYPE
-
+    return NEP_WORD
+    
 
 def sep_plural_n_case_markers(word:str, sep_deva: bool = False) -> tuple[str, str]:
     """
