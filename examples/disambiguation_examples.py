@@ -47,6 +47,8 @@ def disambiguate(sentence: str,
     edit_dist: Optional[int] = None, 
     lang_scoring:bool = True, 
     sep_case_plural:bool = False) -> str:
+    if not sentence:
+        return sentence
     if sep_case_plural:
         sentence = split_plural_n_case_markers(sen = sentence, reverse_dict=reverse_dict, sep_deva = True)
     words = get_words_from_sentence(sentence)
